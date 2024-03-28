@@ -11,7 +11,7 @@
 <p align="center">
   <a href="CONTRIBUTING.md">Contributing Guidelines</a>
   ·
-  <a href="https://github.com/angular/angular/issues">Submit an Issue</a>
+  <a href="https://github.com/sculife/sculife-app/issues">Submit an Issue</a>
   <br>
 </p>
 
