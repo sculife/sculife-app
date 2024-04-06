@@ -16,4 +16,6 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
+  // gold: "#DDA73C", // backup color
+  // g: "#4B5563" // backup color
 };
