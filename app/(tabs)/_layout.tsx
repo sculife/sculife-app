@@ -39,7 +39,7 @@ export default function TabLayout() {
             <TabBarIcon name="earth-americas" color={color} />
           ),
           headerRight: () => (
-            <Link href="/modal" asChild>
+            <Link href="/search" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome

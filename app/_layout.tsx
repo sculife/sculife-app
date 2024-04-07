@@ -58,8 +58,14 @@ function RootLayoutNav() {
           name="(tabs)"
           options={{ headerShown: false, title: '主页' }} // title for navigation
         />
-        <Stack.Screen name="(announcement)/[id]" options={{ animation: 'ios' }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="(announcement)/[id]"
+          options={{ animation: 'ios' }}
+        />
+        <Stack.Screen
+          name="search"
+          options={{ animation: "ios", title: '搜索' }}
+        />
       </Stack>
     </ThemeProvider>
   );

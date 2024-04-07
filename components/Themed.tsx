@@ -3,7 +3,12 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView, ScrollView as DefaultScrollView } from 'react-native';
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  ScrollView as DefaultScrollView,
+  TextInput as DefaultTextInput,
+} from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
@@ -15,6 +20,7 @@ type ThemeProps = {
 
 export type ScrollViewProps = ThemeProps & DefaultScrollView['props'];
 export type TextProps = ThemeProps & DefaultText['props'];
+export type TextInputProps = ThemeProps & DefaultTextInput['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 
 export function useThemeColor(
@@ -33,9 +39,14 @@ export function useThemeColor(
 
 export function ScrollView(props: ScrollViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    'background'
+  );
 
-  return <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return (
+    <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} />
+  );
 }
 
 export function Text(props: TextProps) {
@@ -45,9 +56,24 @@ export function Text(props: TextProps) {
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
 
+export function TextInput(props: TextInputProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+
+  return <DefaultTextInput style={[{ color }, style]} {...otherProps} />;
+}
+
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    'background'
+  );
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
+
+// ScrollView
+// Text
+// TextInput
+// View

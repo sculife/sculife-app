@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Platform,
   SafeAreaView,
   TouchableOpacity,
@@ -18,29 +17,8 @@ export default function TabOneScreen() {
   const router = useRouter();
 
   return (
-    <ScrollView
-    // onScroll={(event) => {
-    //   const yOffset = event.nativeEvent.contentOffset.y;
-    //   if (yOffset > 10) {
-    //     navigation.setOptions({ headerShown: false });
-    //   } else {
-    //     navigation.setOptions({ headerShown: true });
-    //   }
-    // }}
-    >
+    <ScrollView>
       <SafeAreaView>
-        {/* header */}
-        {/* <View className="flex-row items-center justify-between min-w-max p-2 px-4"> */}
-        {/* <Text className="text-xl">探索</Text> */}
-        {/* <Text className="text-xl">探索</Text>
-          <FontAwesome name="search" size={25} color="white" />
-        </View> */}
-        {/* <View
-          className="my-[30px] h-[1px] w-[80%]"
-          lightColor="#eee"
-          darkColor="rgba(255,255,255,0.1)"
-        /> */}
-
         {/* 置顶资讯 */}
         <TouchableOpacity
           onPress={() => {
@@ -73,7 +51,7 @@ export default function TabOneScreen() {
                 title={announcement.title}
                 content={announcement.content}
                 authorName={announcement.author}
-                time={2}
+                time={i}
               />
             </TouchableOpacity>
           </View>
