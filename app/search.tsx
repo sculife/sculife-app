@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Platform, Pressable, TouchableOpacity } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 import { ScrollView, Text, TextInput, View } from '@/components/Themed';
-import { FontAwesome } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { useState } from 'react';
 import AnnouncementCardView from '@/components/AnnouncementCardView';
 
-import announcement from '@/assets/fakes/announcement.json';
-import { useRouter } from 'expo-router';
+import announcements from '@/assets/fakes/announcements.json';
 
 export default function SearchModalScreen() {
   const router = useRouter();
@@ -21,10 +21,12 @@ export default function SearchModalScreen() {
   const search = () => {
     try {
       // TODO: backend
-      let arr = announcement.content.match(new RegExp(searchText, 'i'));
+      let arr = announcements.filter((announcement) =>
+        announcement.content.match(new RegExp(searchText, 'i'))
+      );
       if (!arr) throw new Error();
       setSearchError('');
-      setSearchResult(new Array(10).fill(0));
+      setSearchResult(arr);
     } catch (e) {
       setSearchError('搜索失败，无此内容，请再尝试吧！');
     }
@@ -56,29 +58,33 @@ export default function SearchModalScreen() {
             />
           </Pressable>
         </View>
+
         <View
           className="my-5 h-[1px] w-[80%]"
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
+
         {searchError ? (
           <View>
             <Text>{searchError}</Text>
           </View>
         ) : (
-          searchResult.map((_, i) => (
-            <View key={i} className="mx-7 my-2">
+          searchResult.map((announcement, i) => (
+            // TODO: maybe shouldn't set w-[90%]
+            <View key={i} className="mx-7 my-2 w-[90%]">
               <TouchableOpacity
                 onPress={() => {
-                  router.push(`/(announcement)/${i}`);
+                  router.push(`/(announcement)/${announcement.postId}`);
                 }}
+                className="w-[100%]"
               >
                 {/* TODO: backend */}
                 <AnnouncementCardView
                   title={announcement.title}
                   content={announcement.content}
                   authorName={announcement.author}
-                  time={i}
+                  time={announcement.timestamp}
                 />
               </TouchableOpacity>
             </View>

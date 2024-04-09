@@ -10,9 +10,9 @@ export default function AnnouncementCardView({
   authorName: string;
   content: string;
   title: string;
-  time: number;
+  time: number | string;
 }) {
-  const handleTime = (time: number) => {
+  const handleTime = (time: number | string) => {
     return '7小时前';
   };
   return (

@@ -33,7 +33,6 @@ export default function UserInfoScreen() {
       <View className="m-7">
         <Text>正在处理的功能</Text>
         <Text>{`=>   `}管理个人可管理信息</Text>
-        <Text>{`=>   `}搜索</Text>
         <Text>{`=>   `}创建文章</Text>
         <Text>{`=>   `}文章排版</Text>
         <Text>{`=>   `}三语 (需要翻译支持)</Text>
@@ -43,7 +42,13 @@ export default function UserInfoScreen() {
         <Text>{`=>   `}InformationScreen</Text>
         <Text>{`=>   `}MsgScreen</Text>
         <Text>{`=>   `}头像</Text>
-        <Text>{`=>   `}个人bio</Text>
+      </View>
+      <View className="m-7">
+        <Text>已拥有功能</Text>
+        <Text>{`=>   `}公告</Text>
+        <Text>{`   =>   `}查看公告</Text>
+        <Text>{`   =>   `}搜索公告</Text>
+        <Text>{`=>   `}查看个人信息</Text>
       </View>
     </View>
   );
