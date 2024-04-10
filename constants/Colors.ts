@@ -16,6 +16,9 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
+  ios: {
+    linkBlue: '#007AFF',
+  },
   zinc: {
     '800+100': 'rgb(139 139 142)',
     '800+150': 'rgb(189 189 192)',

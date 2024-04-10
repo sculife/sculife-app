@@ -7,6 +7,7 @@ import { Pressable } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { Text } from '@/components/Themed';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -65,8 +66,38 @@ export default function TabLayout() {
       <Tabs.Screen
         name="information"
         options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="bell" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="result"
+        options={{
+          title: '成绩',
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <Link href="/resultEditor" asChild>
+              <Pressable>
+                {({ pressed }) => (
+                  <Text
+                    style={{
+                      marginRight: 15,
+                      opacity: pressed ? 0.5 : 1,
+                      color: Colors.ios.linkBlue,
+                    }}
+                  >
+                    编辑
+                  </Text>
+                )}
+              </Pressable>
+            </Link>
+          ),
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="bell" color={color} />
+            <FontAwesome
+              name="bar-chart"
+              size={28}
+              style={{ marginBottom: -3 }}
+              color={color}
+            />
           ),
         }}
       />
@@ -74,9 +105,7 @@ export default function TabLayout() {
         name="userInfo"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="user" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
     </Tabs>

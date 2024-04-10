@@ -64,7 +64,11 @@ function RootLayoutNav() {
         />
         <Stack.Screen
           name="search"
-          options={{ animation: "ios", title: '搜索' }}
+          options={{ animation: 'ios', title: '搜索' }}
+        />
+        <Stack.Screen
+          name="resultEditor"
+          options={{ animation: 'ios', title: '编辑成绩' }}
         />
       </Stack>
     </ThemeProvider>

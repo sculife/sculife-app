@@ -28,7 +28,7 @@ export default function UserInfoScreen() {
 
       <View className="m-7">
         <Text>考虑增加的功能</Text>
-        <Text>{`=>   `}个人成绩</Text>
+        <Text>{`=>   `}没有其他的了？来点建议！</Text>
       </View>
       <View className="m-7">
         <Text>正在处理的功能</Text>
@@ -49,6 +49,7 @@ export default function UserInfoScreen() {
         <Text>{`   =>   `}查看公告</Text>
         <Text>{`   =>   `}搜索公告</Text>
         <Text>{`=>   `}查看个人信息</Text>
+        <Text>{`=>   `}查看个人成绩</Text>
       </View>
     </View>
   );
