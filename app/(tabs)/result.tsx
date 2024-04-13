@@ -1,10 +1,15 @@
-import { Dimensions } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { useFocusEffect, useNavigation } from 'expo-router';
+import { Alert, Dimensions, Pressable } from 'react-native';
 
+import Colors from '@/constants/Colors';
 import RadarChart from '@/components/RadarChart';
 import { ScrollView, Text, View } from '@/components/Themed';
 import useResultStore, { subjects } from '@/store/useResultStore';
+import { useEffect } from 'react';
 
 export default function ResultScreen() {
+  const navigation = useNavigation();
   const result = useResultStore((state) => state.data);
 
   const calcTotal = () => {
@@ -13,6 +18,59 @@ export default function ResultScreen() {
     }
     return 0;
   };
+
+  const copyToClipboard = async () => {
+    // console.log(
+    //   Object.fromEntries(
+    //     Object.entries(result)
+    //       .filter(
+    //         ([_, value]) => !(isNaN(Number(value)) || Number(value) == -1)
+    //       )
+    //       .sort((a, b) => (a[0] as string).localeCompare(b[0] as string))
+    //   )
+    // );
+
+    try {
+      await Clipboard.setStringAsync(
+        JSON.stringify(
+          Object.fromEntries(
+            Object.entries(result)
+              .filter(
+                ([_, value]) => !(isNaN(Number(value)) || Number(value) == -1)
+              )
+              .sort((a, b) => (a[0] as string).localeCompare(b[0] as string))
+          )
+        )
+      );
+
+      Alert.alert('success', 'Copied to clipboard', undefined, {
+        userInterfaceStyle: 'dark',
+      });
+    } catch (e) {
+      console.warn('ResultScreen function copyToClipboard error', e);
+      Alert.alert('failed with error', 'Clipboard Error');
+    }
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={copyToClipboard}>
+          {({ pressed }) => (
+            <Text
+              style={{
+                marginLeft: 15,
+                opacity: pressed ? 0.5 : 1,
+                color: Colors.ios.linkBlue,
+              }}
+            >
+              导出
+            </Text>
+          )}
+        </Pressable>
+      ),
+    });
+  }, [result]);
 
   return (
     <ScrollView className="flex-1 min-h-full">
