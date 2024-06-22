@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Dimensions, SafeAreaView } from 'react-native';
+import { Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 
 import { ScrollView, Text, View } from '@/components/Themed';
 
 import announcements from '@/assets/fakes/announcements.json';
+import { Post } from '@/typings/api';
 
 export default function AnnouncementView() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
-  const [post, setPost] = useState<any | undefined>({});
+  const [post, setPost] = useState<Post | undefined>(undefined);
 
   useEffect(() => {
     let found = announcements.find(
@@ -50,7 +51,7 @@ export default function AnnouncementView() {
             {/* department */}
             <View className="ml-5 mt-3">
               <Text className="font-bold text-base">
-                FROM: <Text className=" text-gray-300">{post.department}</Text>
+                FROM: <Text className=" text-gray-300">{post.departmentName}</Text>
               </Text>
             </View>
 
