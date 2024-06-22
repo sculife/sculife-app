@@ -56,20 +56,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="message"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="message" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="information"
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="bell" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="result"
         options={{
           title: '成绩',
