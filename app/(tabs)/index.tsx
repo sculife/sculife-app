@@ -55,7 +55,7 @@ export default function TabOneScreen() {
                 title={announcement.title}
                 content={announcement.content}
                 authorName={announcement.author}
-                time={announcement.timestamp}
+                time={announcement.updatedAt}
               />
             </TouchableOpacity>
           </View>
