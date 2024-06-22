@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Platform, Pressable, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { ScrollView, Text, TextInput, View } from '@/components/Themed';
 import Colors from '@/constants/Colors';
@@ -64,6 +64,12 @@ export default function SearchModalScreen() {
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
+
+        {searchResult.length === 0 && (
+          <View>
+            <Text>没有找到您要的东西</Text>
+          </View>
+        )}
 
         {searchError ? (
           <View>
