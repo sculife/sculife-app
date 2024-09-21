@@ -59,16 +59,16 @@ function RootLayoutNav() {
   useEffect(() => {
     if (isLoading) return;
     if (!session) {
-      // router.replace('/signIn');
+      router.replace('/login');
     } else {
       console.log('session:', session);
       try {
         let user = JSON.parse(session);
-        // if (!user.token) router.replace('/signIn');
+        if (!user.token) router.replace('/login');
         setToken(user.token);
-        // if (!user.permissions) router.replace('/signIn');
+        if (!user.permissions) router.replace('/login');
         setPermissions(user.permissions);
-        // if (!user.uid) router.replace('/signIn');
+        if (!user.uid) router.replace('/login');
         setUid(user.uid);
       } catch (e) {
         console.log('session: JSON parse error');
@@ -97,6 +97,10 @@ function RootLayoutNav() {
         <Stack.Screen
           name="resultEditor"
           options={{ animation: 'ios', title: '编辑成绩' }}
+        />
+        <Stack.Screen
+          name="login"
+          options={{ animation: 'ios', headerShown: false }}
         />
       </Stack>
     </ThemeProvider>
