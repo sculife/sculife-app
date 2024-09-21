@@ -1,13 +1,13 @@
 import React from 'react';
+import { Pressable } from 'react-native';
+import { Link, Tabs } from 'expo-router';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Octicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { Text } from '@/components/Themed';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -64,15 +64,17 @@ export default function TabLayout() {
             <Link href="/resultEditor" asChild>
               <Pressable>
                 {({ pressed }) => (
-                  <Text
+                  <Octicons
                     style={{
-                      marginRight: 15,
+                      marginRight: 20,
+                      padding: 5,
                       opacity: pressed ? 0.5 : 1,
                       color: Colors.ios.linkBlue,
                     }}
-                  >
-                    编辑
-                  </Text>
+                    name="pencil"
+                    size={20}
+                    color={Colors.ios.linkBlue}
+                  />
                 )}
               </Pressable>
             </Link>

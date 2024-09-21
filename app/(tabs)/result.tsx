@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { useFocusEffect, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import { Alert, Dimensions, Pressable } from 'react-native';
 
 import Colors from '@/constants/Colors';
@@ -7,6 +7,7 @@ import RadarChart from '@/components/RadarChart';
 import { ScrollView, Text, View } from '@/components/Themed';
 import useResultStore, { subjects } from '@/store/useResultStore';
 import { useEffect } from 'react';
+import { Octicons } from '@expo/vector-icons';
 
 export default function ResultScreen() {
   const navigation = useNavigation();
@@ -57,15 +58,17 @@ export default function ResultScreen() {
       headerLeft: () => (
         <Pressable onPress={copyToClipboard}>
           {({ pressed }) => (
-            <Text
-              style={{
-                marginLeft: 15,
-                opacity: pressed ? 0.5 : 1,
-                color: Colors.ios.linkBlue,
-              }}
-            >
-              导出
-            </Text>
+              <Octicons
+                style={{
+                  marginLeft: 20,
+                  padding: 5,
+                  opacity: pressed ? 0.5 : 1,
+                  color: Colors.ios.linkBlue,
+                }}
+                name="share"
+                size={20}
+                color={Colors.ios.linkBlue}
+              />
           )}
         </Pressable>
       ),

@@ -6,6 +6,7 @@ import { Alert, Pressable, TouchableOpacity } from 'react-native';
 import { ScrollView, Text, TextInput, View } from '@/components/Themed';
 import Colors from '@/constants/Colors';
 import useResultStore, { subjects } from '@/store/useResultStore';
+import { Octicons } from '@expo/vector-icons';
 
 export default function ResultEditorScreen() {
   const navigation = useNavigation();
@@ -27,7 +28,7 @@ export default function ResultEditorScreen() {
     let obj: (keyof typeof subjects)[] = [],
       result = r; // garbage, absolutely rubbish code, wtf is this??!
 
-    console.log("resultEditor", result);
+    console.log('resultEditor', result);
 
     for (let k in result) {
       if (Number(result[k]) >= 0 && Number(result[k]) <= 100) {
@@ -79,18 +80,17 @@ export default function ResultEditorScreen() {
       headerRight: () => (
         <Pressable onPress={fetchCopiedText}>
           {({ pressed }) => (
-            <Text
+            <Octicons
               style={{
-                marginRight: 10,
+                marginRight: 5,
                 opacity: pressed ? 0.5 : 1,
                 color: Colors.ios.linkBlue,
-                paddingHorizontal: 8,
-                paddingVertical: 5,
-                // backgroundColor: 'white',
+                padding: 5,
               }}
-            >
-              导入
-            </Text>
+              name="file-submodule"
+              size={20}
+              color={Colors.ios.linkBlue}
+            />
           )}
         </Pressable>
       ),
