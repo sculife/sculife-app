@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -11,7 +11,10 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import TabOneScreen from '.';
 import ResultScreen from './result';
+import PostsScreen from './posts';
 import UserInfoScreen from './userInfo';
+import useUserStore from '@/store/useUserStore';
+import { hasPermissions } from '@/utils/usersPermissions';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -25,6 +28,17 @@ const Tabs = createBottomTabNavigator();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { permissions } = useUserStore((state) => state);
+  const [canManagePosts, setCanManagePosts] = useState(false);
+
+  useEffect(() => {
+    setCanManagePosts(
+      hasPermissions(permissions, 'ADMIN') ||
+        hasPermissions(permissions, 'CREATE_POSTS') ||
+        hasPermissions(permissions, 'DELETE_POSTS')
+    );
+    console.log(permissions);
+  }, [permissions]);
 
   return (
     <Tabs.Navigator
@@ -97,6 +111,22 @@ export default function TabLayout() {
           ),
         }}
       />
+      {canManagePosts ? (
+        <Tabs.Screen
+          name="posts"
+          component={PostsScreen}
+          options={{
+            // headerShown: false,
+            title: '管理帖子',
+            headerTitleAlign: 'center',
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="folder" color={color} />
+            ),
+          }}
+        />
+      ) : (
+        <></>
+      )}
       <Tabs.Screen
         name="userInfo"
         component={UserInfoScreen}
