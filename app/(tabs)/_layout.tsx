@@ -1,13 +1,17 @@
 import React from 'react';
 import { Pressable } from 'react-native';
-import { Link, Tabs } from 'expo-router';
+import { Link } from 'expo-router';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Octicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import TabOneScreen from '.';
+import ResultScreen from './result';
+import UserInfoScreen from './userInfo';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -17,11 +21,13 @@ function TabBarIcon(props: {
   return <FontAwesome6 size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
+const Tabs = createBottomTabNavigator();
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
+    <Tabs.Navigator
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         // Disable the static render of the header on web
@@ -32,6 +38,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="index"
+        component={TabOneScreen}
         options={{
           // headerShown: false,
           title: '探索',
@@ -57,6 +64,7 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="result"
+        component={ResultScreen}
         options={{
           title: '成绩',
           headerTitleAlign: 'center',
@@ -91,11 +99,12 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="userInfo"
+        component={UserInfoScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
-    </Tabs>
+    </Tabs.Navigator>
   );
 }
