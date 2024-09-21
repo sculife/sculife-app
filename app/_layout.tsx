@@ -5,11 +5,13 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { useStorageState } from '@/store/useStorageState';
+import useUserStore from '@/store/useUserStore';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,6 +52,32 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
+  const [[isLoading, session]] = useStorageState('session');
+  const { setToken, setPermissions, setUid } = useUserStore((state) => state);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!session) {
+      // router.replace('/signIn');
+    } else {
+      console.log('session:', session);
+      try {
+        let user = JSON.parse(session);
+        // if (!user.token) router.replace('/signIn');
+        setToken(user.token);
+        // if (!user.permissions) router.replace('/signIn');
+        setPermissions(user.permissions);
+        // if (!user.uid) router.replace('/signIn');
+        setUid(user.uid);
+      } catch (e) {
+        console.log('session: JSON parse error');
+      }
+    }
+  }, [isLoading, session]);
+
+  // todo: loading screen
+  if (isLoading) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -59,7 +87,7 @@ function RootLayoutNav() {
           options={{ headerShown: false, title: '主页' }} // title for navigation
         />
         <Stack.Screen
-          name="(announcement)/[id]"
+          name="(post)/[id]"
           options={{ animation: 'ios' }}
         />
         <Stack.Screen

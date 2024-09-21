@@ -1,10 +1,24 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
 
 import { Text, View } from '@/components/Themed';
-import user from '@/assets/fakes/user.json';
+import { useStorageState } from '@/store/useStorageState';
+import { UserLoginApiObject } from '@/typings/api';
+import handleText from '@/utils/handleText';
 
 export default function UserInfoScreen() {
+  const [[, session]] = useStorageState('session');
+  const [user, setUser] = useState<UserLoginApiObject | null>(null);
+
+  useEffect(() => {
+    try {
+      let usr = JSON.parse(session!);
+      setUser(usr);
+    } catch (e) {
+      console.log('userInfo session parsed error');
+    }
+  }, [session]);
+
   return (
     <View className="absolute top-14">
       <View className="flex-row justify-between items-center w-full">
@@ -15,15 +29,24 @@ export default function UserInfoScreen() {
             style={{ width: 80, height: 80 }}
           />
           <View className="ml-5">
-            <Text className="font-bold text-3xl">{user.name}</Text>
-            <Text className="font-semibold">{user.cname}</Text>
-            <Text className="font-semibold">{user.class}</Text>
-            <Text className="font-semibold">{user.id}</Text>
+            <Text className="font-bold text-xl">
+              {user ? handleText(user.name, 15) : 'loading....'}
+            </Text>
+            <Text className="font-semibold text-xs">
+              {user ? handleText(user.cname, 15) : 'loading....'}
+            </Text>
+            <Text className="font-semibold text-xs">
+              {user ? user.class : 'loading....'}
+            </Text>
+            <Text className="font-semibold text-xs">
+              {user ? user.id : 'loading....'}
+            </Text>
           </View>
         </View>
-        <View className="mr-10">
+        {/* TODO: maybe allow user edit? */}
+        {/* <View className="mr-10">
           <FontAwesome name="edit" size={20} color="white" />
-        </View>
+        </View> */}
       </View>
 
       <View className="m-7">
@@ -32,13 +55,13 @@ export default function UserInfoScreen() {
       </View>
       <View className="m-7">
         <Text>正在处理的功能</Text>
-        <Text>{`=>   `}管理个人可管理信息</Text>
         <Text>{`=>   `}创建文章</Text>
         <Text>{`=>   `}文章排版</Text>
         <Text>{`=>   `}三语 (需要翻译支持)</Text>
       </View>
       <View className="m-7">
         <Text>思考去留的功能</Text>
+        <Text>{`=>   `}管理个人可管理信息</Text>
         <Text>{`=>   `}InformationScreen</Text>
         <Text>{`=>   `}MsgScreen</Text>
         <Text>{`=>   `}头像</Text>

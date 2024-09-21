@@ -1,24 +1,61 @@
 import { Platform, SafeAreaView, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import axios from 'axios';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
 
 import { View, Text, ScrollView } from '@/components/Themed';
-import AnnouncementCardView from '@/components/AnnouncementCardView';
+import PostCardView from '@/components/PostCardView';
 import handleText from '@/utils/handleText';
 
-import announcements from '@/assets/fakes/announcements.json';
+import { useEffect, useState } from 'react';
+import { ApiObject, Post, PostApiResponseBody } from '@/typings/api';
+import url from '@/constants/Url';
+import handlePostObject from '@/utils/handlePostObject';
+import useUserStore from '@/store/useUserStore';
 
 export default function TabOneScreen() {
   const router = useRouter();
+  const token = useUserStore((state) => state.token);
+
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await axios.get(url.BASE_URL + '/api/posts/', {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+          params: {
+            limit: 20,
+          },
+        });
+        const { data: posts } = res.data as ApiObject<PostApiResponseBody>;
+        // console.log('(tabs)/index: ', posts);
+
+        // todo: handle data
+        let promises = posts.map((p) => handlePostObject(p, token));
+        let postsObject = await Promise.allSettled(promises);
+        setPosts(
+          postsObject
+            .filter((p) => p.status === 'fulfilled')
+            .map((p) => p.value)
+        );
+      } catch (e) {
+        console.log('(tabs)/index [axios error]:', e);
+      }
+    }
+    fetchData();
+  }, [token]);
 
   const PinnedPost = () => {
-    let post = announcements.find((ann) => ann.pinned);
+    let post = posts.find((p) => p.pinned);
     if (!post) return;
     return (
       <TouchableOpacity
         onPress={() => {
-          router.push(`/(announcement)/${post.postId}`);
+          router.push(`/(post)/${post.postId}`);
         }}
       >
         <View className="m-7 p-4 bg-[#222] rounded-2xl">
@@ -28,7 +65,7 @@ export default function TabOneScreen() {
               <FontAwesome6 name="newspaper" light size={40} color="gray" />
             </View>
             <View className="pl-3 flex-1 bg-[#222]">
-              <Text>{handleText(post.content)}</Text>
+              <Text>{handleText(post.title, 30)}</Text>
             </View>
           </View>
         </View>
@@ -44,18 +81,18 @@ export default function TabOneScreen() {
 
         <Text className="mx-7 font-black text-2xl">最新公告</Text>
         {/* Newest Posts */}
-        {announcements.map((announcement, i) => (
+        {posts.map((post, i) => (
           <View key={i} className="mx-7 my-2">
             <TouchableOpacity
               onPress={() => {
-                router.push(`/(announcement)/${announcement.postId}`);
+                router.push(`/(post)/${post.postId}`);
               }}
             >
-              <AnnouncementCardView
-                title={announcement.title}
-                content={announcement.content}
-                authorName={announcement.author}
-                time={announcement.updatedAt}
+              <PostCardView
+                title={post.title}
+                content={post.content}
+                author={post.author}
+                time={post.updatedAt}
               />
             </TouchableOpacity>
           </View>

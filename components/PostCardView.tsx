@@ -1,20 +1,19 @@
 import handleText from '@/utils/handleText';
 import { Text, View } from './Themed';
+import { User } from '@/typings/api';
+import handleTime from '@/utils/handleTime';
 
-export default function AnnouncementCardView({
-  authorName,
+export default function PostCardView({
+  author,
   content,
   title,
   time,
 }: {
-  authorName: string;
+  author: User | null;
   content: string;
   title: string;
-  time: number | string;
+  time: string;
 }) {
-  const handleTime = (time: number | string) => {
-    return '7小时前';
-  };
   return (
     <View className="bg-[#222] rounded-2xl px-5 py-3">
       {/* title */}
@@ -24,16 +23,17 @@ export default function AnnouncementCardView({
         {handleText(content, 100)}
       </Text>
       {/* tags */}
-      <View className="bg-[#222]">
-        {/* TODO: should i need this? */}
-        <Text className="font-medium">Important Announcements</Text>
-      </View>
+      {/* TODO: should i need this? */}
+      {/* <View className="bg-[#222]">
+        <Text className="font-medium">Important Post</Text>
+      </View> */}
       {/* post info */}
       <View className="bg-[#222] flex-row justify-between">
         {/* author */}
         <View className="bg-[#222]">
           <Text className="font-bold text-gray-300">
-            {handleText(authorName, 25)}
+            <Text>By. </Text>
+            {handleText(author?.name ?? 'Author Not Found', 25)}
           </Text>
         </View>
         {/* time */}
