@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   Platform,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
@@ -9,12 +10,13 @@ import { useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios';
 import PostCardView from '@/components/PostCardView';
-import { ScrollView, View } from '@/components/Themed';
+import { ScrollView, useThemeColor, View } from '@/components/Themed';
 import { EditCode } from '@/constants/Code';
 import Colors from '@/constants/Colors';
 import Url from '@/constants/Url';
 import useUserStore from '@/store/useUserStore';
 import handlePostObject from '@/utils/handlePostObject';
+import { wait } from '@/utils/wait';
 import { Octicons } from '@expo/vector-icons';
 import { ApiObject, Post, PostApiResponseBody } from '@/typings/api';
 
@@ -22,7 +24,9 @@ export default function PostsScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { uid, token } = useUserStore();
+  const iconColor = useThemeColor({}, 'tint');
   const [posts, setPosts] = useState<Post[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   async function fetchData() {
     try {
@@ -49,6 +53,15 @@ export default function PostsScreen() {
 
   const createPost = () => {
     router.push(`/(post)/(edit)/(editor)/NO?editCode=${EditCode.CREATE_POST}`);
+  };
+
+  const onRefresh = async () => {
+    console.log('refreshing (tabs)/post');
+    setRefreshing(true);
+    fetchData();
+    await wait(1000);
+    setRefreshing(false);
+    console.log('stop refreshing (tabs)/post');
   };
 
   useEffect(() => {
@@ -79,7 +92,16 @@ export default function PostsScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            tintColor={iconColor}
+            colors={[iconColor]}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
         {posts.map((post, i) => (
           <View key={i} className="mx-7 my-2">
             <TouchableOpacity

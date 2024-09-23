@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, RefreshControl } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import axios from 'axios';
 
-import { ScrollView } from '@/components/Themed';
+import { ScrollView, useThemeColor } from '@/components/Themed';
 import PostView from '@/components/PostView';
 
 import Url from '@/constants/Url';
 import useUserStore from '@/store/useUserStore';
 import handlePostObject from '@/utils/handlePostObject';
+import { wait } from '@/utils/wait';
 import { ApiObject, Post, PostApiObject } from '@/typings/api';
 
 export default function PostsView() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const token = useUserStore((state) => state.token);
+  const iconColor = useThemeColor({}, 'tint');
   const [post, setPost] = useState<Post | undefined>({
     postId: '',
     authorUid: '',
@@ -28,6 +30,7 @@ export default function PostsView() {
     author: null,
     department: null,
   });
+  const [refreshing, setRefreshing] = useState(false);
 
   async function fetchPostData() {
     try {
@@ -65,12 +68,30 @@ export default function PostsView() {
     }
   }
 
+  const onRefresh = async () => {
+    console.log('refreshing (tabs)/index');
+    setRefreshing(true);
+    fetchPostData();
+    await wait(1000);
+    setRefreshing(false);
+    console.log('stop refreshing');
+  };
+
   useEffect(() => {
     fetchPostData();
   }, [id]);
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          tintColor={iconColor}
+          colors={[iconColor]}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+    >
       <Image
         source={require('@/assets/images/bg-images/pexels-lil-artsy-1213447.jpg')}
         // className="aspect-square"
