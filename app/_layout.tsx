@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {
   DarkTheme,
@@ -7,11 +8,13 @@ import {
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import axios from 'axios';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { useStorageState } from '@/store/useStorageState';
 import useUserStore from '@/store/useUserStore';
+import Url from '@/constants/Url';
+import { ApiObject, UserLoginApiObject } from '@/typings/api';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -58,21 +61,35 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!session) {
-      router.replace('/login');
-    } else {
+
+    try {
+      if (!session) throw new Error('#>Invalid Session');
       console.log('session:', session);
-      try {
-        let user = JSON.parse(session);
-        if (!user.token) router.replace('/login');
-        setToken(user.token);
-        if (!user.permissions) router.replace('/login');
-        setPermissions(user.permissions);
-        if (!user.uid) router.replace('/login');
-        setUid(user.uid);
-      } catch (e) {
-        console.log('session: JSON parse error');
+      let user = JSON.parse(session);
+      if (!user.token) throw new Error('#>Invalid Token');
+      setToken(user.token);
+      verifyUser();
+      if (!user.permissions) throw new Error('#>Invalid Permissions');
+      setPermissions(user.permissions);
+      if (!user.uid) throw new Error('#>Invalid Uid');
+      setUid(user.uid);
+
+      async function verifyUser() {
+        const res = await axios.post(
+          `${Url.BASE_URL}/api/users/verify`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        let { data } = res.data as ApiObject<UserLoginApiObject>;
       }
+    } catch (e) {
+      console.log(e);
+      console.log('session: JSON parse error');
+      router.replace('/login');
     }
   }, [isLoading, session]);
 
@@ -86,9 +103,14 @@ function RootLayoutNav() {
           name="(tabs)"
           options={{ headerShown: false, title: '主页' }} // title for navigation
         />
+        <Stack.Screen name="(post)/[id]" options={{ animation: 'ios' }} />
         <Stack.Screen
-          name="(post)/[id]"
+          name="(post)/(edit)/[id]"
           options={{ animation: 'ios' }}
+        />
+        <Stack.Screen
+          name="(post)/(edit)/(editor)/[id]"
+          options={{ animation: 'ios', headerBackTitle: 'Back' }}
         />
         <Stack.Screen
           name="search"

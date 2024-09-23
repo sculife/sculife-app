@@ -38,16 +38,18 @@ export default async function handlePostObject(
     );
   }
 
-  try {
-    const res = await findDepartment(obj.departmentId ?? '');
-    console.log(res);
-    retObj.department = res;
-  } catch (e) {
-    console.log(
-      'handlePostObject:',
-      e,
-      `${Url.BASE_URL}/api/departments/${obj.departmentId ?? ''}`
-    );
+  if (obj.departmentId) {
+    try {
+      const res = await findDepartment(obj.departmentId);
+      console.log(res);
+      retObj.department = res;
+    } catch (e) {
+      console.log(
+        'handlePostObject:',
+        e,
+        `${Url.BASE_URL}/api/departments/${obj.departmentId}`
+      );
+    }
   }
 
   return {

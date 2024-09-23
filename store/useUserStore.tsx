@@ -12,7 +12,7 @@ interface UserStore {
 const useUserStore = create<UserStore>((set) => ({
   token: '',
   uid: '',
-  permissions: -1,
+  permissions: 0,
   setToken: (token) => {
     set((preData) => ({
       ...preData,

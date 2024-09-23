@@ -1,7 +1,8 @@
-import handleText from '@/utils/handleText';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { Text, View } from './Themed';
-import { User } from '@/typings/api';
+import handleText from '@/utils/handleText';
 import handleTime from '@/utils/handleTime';
+import { User } from '@/typings/api';
 
 export default function PostCardView({
   author,
@@ -20,7 +21,7 @@ export default function PostCardView({
       <Text className="font-semibold text-xl">{handleText(title, 25)}</Text>
       {/* content */}
       <Text className="pb-4 pt-0" style={{ fontSize: 12 }}>
-        {handleText(content, 100)}
+        {handleText(NodeHtmlMarkdown.translate(content), 100)}
       </Text>
       {/* tags */}
       {/* TODO: should i need this? */}
