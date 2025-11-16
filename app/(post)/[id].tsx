@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react';
-import { Dimensions, RefreshControl } from 'react-native';
+import { Dimensions, Pressable, RefreshControl } from 'react-native';
 import { Image } from 'expo-image';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import axios from 'axios';
+import { Octicons } from '@expo/vector-icons';
 
+import { useSession } from '@/hooks/ctx';
 import { ScrollView, useThemeColor } from '@/components/Themed';
 import PostView from '@/components/PostView';
-
 import Url from '@/constants/Url';
-import useUserStore from '@/store/useUserStore';
+import { EditCode } from '@/constants/Code';
+import Colors from '@/constants/Colors';
 import handlePostObject from '@/utils/handlePostObject';
 import { wait } from '@/utils/wait';
 import { ApiObject, Post, PostApiObject } from '@/typings/api';
 
 export default function PostsView() {
-  const { id } = useLocalSearchParams();
+  const { session: token } = useSession();
+  const { id, canEdit } = useLocalSearchParams();
   const navigation = useNavigation();
-  const token = useUserStore((state) => state.token);
+  const router = useRouter();
   const iconColor = useThemeColor({}, 'tint');
   const [post, setPost] = useState<Post | undefined>({
     postId: '',
@@ -78,6 +81,39 @@ export default function PostsView() {
   };
 
   useEffect(() => {
+    if (typeof id !== 'string') return;
+    if (canEdit && !!canEdit) {
+      navigation.setOptions({
+        headerRight: () => (
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: `/(post)/(editor)/[id]`,
+                params: {
+                  id,
+                  editCode: EditCode.EDIT_POST,
+                },
+              })
+            }
+          >
+            {({ pressed }) => (
+              <Octicons
+                style={{
+                  marginLeft: 20,
+                  padding: 5,
+                  opacity: pressed ? 0.5 : 1,
+                  color: Colors.ios.linkBlue,
+                }}
+                name="pencil"
+                size={20}
+                color={Colors.ios.linkBlue}
+              />
+            )}
+          </Pressable>
+        ),
+      });
+    }
+
     fetchPostData();
   }, [id]);
 

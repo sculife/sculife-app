@@ -1,23 +1,13 @@
-import { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
 
 import { Text, View } from '@/components/Themed';
-import { useStorageState } from '@/store/useStorageState';
-import { UserLoginApiObject } from '@/typings/api';
 import handleText from '@/utils/handleText';
+import useUserStore from '@/store/useUserStore';
+import { useSession } from '@/hooks/ctx';
 
 export default function UserInfoScreen() {
-  const [[, session]] = useStorageState('session');
-  const [user, setUser] = useState<UserLoginApiObject | null>(null);
-
-  useEffect(() => {
-    try {
-      let usr = JSON.parse(session!);
-      setUser(usr);
-    } catch (e) {
-      console.log('userInfo session parsed error');
-    }
-  }, [session]);
+  const user = useUserStore((state) => state.user);
+  const { signOut } = useSession();
 
   return (
     <View className="absolute top-14">

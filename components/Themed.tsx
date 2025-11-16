@@ -9,6 +9,7 @@ import {
   ScrollView as DefaultScrollView,
   TextInput as DefaultTextInput,
   TouchableOpacity as DefaultTouchableOpacity,
+  type TouchableOpacityProps as DefaultTouchableOpacityProps,
 } from 'react-native';
 
 import Colors from '@/constants/Colors';
@@ -23,8 +24,7 @@ export type ScrollViewProps = ThemeProps & DefaultScrollView['props'];
 export type TextProps = ThemeProps & DefaultText['props'];
 export type TextInputProps = ThemeProps & DefaultTextInput['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
-export type TouchableOpacityProps = ThemeProps &
-  DefaultTouchableOpacity['props'];
+export type TouchableOpacityProps = ThemeProps & DefaultTouchableOpacityProps;
 
 export function useThemeColor(
   props: { light?: string; dark?: string },

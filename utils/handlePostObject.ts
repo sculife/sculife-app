@@ -13,7 +13,7 @@ import findDepartment from './findDepartment';
 
 export default async function handlePostObject(
   obj: PostApiObject,
-  token: string
+  token?: string | null
 ): Promise<Post> {
   let retObj = {
     author: null as User | null,

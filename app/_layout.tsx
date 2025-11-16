@@ -1,20 +1,22 @@
-import { useEffect } from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useEffect, useState } from 'react';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import axios from 'axios';
 
+import { SessionProvider, useSession } from '@/hooks/ctx';
 import { useColorScheme } from '@/components/useColorScheme';
-import { useStorageState } from '@/store/useStorageState';
 import useUserStore from '@/store/useUserStore';
 import Url from '@/constants/Url';
-import { ApiObject, UserLoginApiObject } from '@/typings/api';
+import { ApiObject } from '@/typings/api';
+import { UserDTO } from '@/typings/dtos';
+import { StatusBar } from 'expo-status-bar';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -30,6 +32,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const { isLoading } = useSession();
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -41,90 +44,113 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && !isLoading) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isLoading]);
 
-  if (!loaded) {
+  if (!loaded || isLoading) {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <SessionProvider>
+      <RootLayoutNav />
+    </SessionProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const router = useRouter();
-  const [[isLoading, session]] = useStorageState('session');
-  const { setToken, setPermissions, setUid } = useUserStore((state) => state);
+
+  const { session, isLoading, signOut } = useSession();
+  const { setUid } = useUserStore((state) => state);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     if (isLoading) return;
-
-    try {
-      if (!session) throw new Error('#>Invalid Session');
-      console.log('session:', session);
-      let user = JSON.parse(session);
-      if (!user.token) throw new Error('#>Invalid Token');
-      setToken(user.token);
-      verifyUser();
-      if (!user.permissions) throw new Error('#>Invalid Permissions');
-      setPermissions(user.permissions);
-      if (!user.uid) throw new Error('#>Invalid Uid');
-      setUid(user.uid);
-
-      async function verifyUser() {
-        const res = await axios.post(
-          `${Url.BASE_URL}/api/users/verify`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        let { data } = res.data as ApiObject<UserLoginApiObject>;
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(Url.BASE_URL + '/api/users/@me', {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        });
+        const { data } = res.data as ApiObject<UserDTO>;
+        setUid(data.uid);
+        console.log(data);
+      } catch (err) {
+        console.error('❌ Failed to fetch user from /@me', err);
+        signOut();
+      } finally {
+        setIsVerifying(false);
       }
-    } catch (e) {
-      console.log(e);
-      console.log('session: JSON parse error');
-      router.replace('/login');
-    }
-  }, [isLoading, session]);
+    };
+
+    fetchUser();
+  }, [session]);
 
   // todo: loading screen
-  if (isLoading) return null;
+  if (isVerifying) {
+    return null;
+  }
+
+  // useEffect(() => {
+  //   if (isLoading) return;
+  //   if (!session) {
+  //     router.replace('/signIn');
+  //   } else {
+  //     console.log('session:', session);
+  //     try {
+  //       let user = JSON.parse(session);
+  //       if (!user.token) router.replace('/signIn');
+  //       setToken(user.token);
+  //       if (!user.permissions) router.replace('/signIn');
+  //       setPermissions(user.permissions);
+  //       if (!user.uid) router.replace('/signIn');
+  //       setUid(user.uid);
+  //     } catch (e) {
+  //       console.log('session: JSON parse error');
+  //     }
+  //   }
+  // }, [isLoading, session]);
+
+  // // todo: loading screen
+  // if (isLoading) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false, title: '主页' }} // title for navigation
-        />
-        <Stack.Screen name="(post)/[id]" options={{ animation: 'ios' }} />
-        <Stack.Screen
-          name="(post)/(edit)/[id]"
-          options={{ animation: 'ios' }}
-        />
-        <Stack.Screen
-          name="(post)/(edit)/(editor)/[id]"
-          options={{ animation: 'ios', headerBackTitle: 'Back' }}
-        />
-        <Stack.Screen
-          name="search"
-          options={{ animation: 'ios', title: '搜索' }}
-        />
-        <Stack.Screen
-          name="resultEditor"
-          options={{ animation: 'ios', title: '编辑成绩' }}
-        />
-        <Stack.Screen
-          name="login"
-          options={{ animation: 'ios', headerShown: false }}
-        />
+        <Stack.Protected guard={!!session}>
+          <Stack.Screen
+            name="(tabs)"
+            options={{ headerShown: false, title: '主页' }} // title for navigation
+          />
+          <Stack.Screen
+            name="(post)/[id]"
+            options={{ animation: 'ios_from_right' }}
+          />
+          {/* <Stack.Screen name="(post)/(editor)/[id]" /> */}
+          <Stack.Screen
+            name="(hidden)/search"
+            options={{
+              animation: 'ios_from_right',
+              title: 'Sculife Posts Search',
+            }}
+          />
+          <Stack.Screen
+            name="(hidden)/result-editor"
+            options={{ animation: 'ios_from_right', title: 'Result Editor' }}
+          />
+        </Stack.Protected>
+
+        <Stack.Protected guard={!session}>
+          <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        </Stack.Protected>
+
+        <Stack.Screen name="+not-found" />
       </Stack>
+      <StatusBar style="auto" />
     </ThemeProvider>
   );
 }

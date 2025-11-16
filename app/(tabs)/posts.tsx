@@ -8,7 +8,9 @@ import {
 } from 'react-native';
 import { useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Octicons } from '@expo/vector-icons';
 import axios from 'axios';
+
 import PostCardView from '@/components/PostCardView';
 import { ScrollView, useThemeColor, View } from '@/components/Themed';
 import { EditCode } from '@/constants/Code';
@@ -17,13 +19,14 @@ import Url from '@/constants/Url';
 import useUserStore from '@/store/useUserStore';
 import handlePostObject from '@/utils/handlePostObject';
 import { wait } from '@/utils/wait';
-import { Octicons } from '@expo/vector-icons';
 import { ApiObject, Post, PostApiResponseBody } from '@/typings/api';
+import { useSession } from '@/hooks/ctx';
 
 export default function PostsScreen() {
   const router = useRouter();
+  const { session: token } = useSession();
   const navigation = useNavigation();
-  const { uid, token } = useUserStore();
+  const { uid } = useUserStore();
   const iconColor = useThemeColor({}, 'tint');
   const [posts, setPosts] = useState<Post[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -52,7 +55,13 @@ export default function PostsScreen() {
   }
 
   const createPost = () => {
-    router.push(`/(post)/(edit)/(editor)/NO?editCode=${EditCode.CREATE_POST}`);
+    router.push({
+      pathname: `/(post)/(editor)/[id]`,
+      params: {
+        id: 'NO',
+        editCode: EditCode.CREATE_POST,
+      },
+    });
   };
 
   const onRefresh = async () => {
@@ -106,7 +115,13 @@ export default function PostsScreen() {
           <View key={i} className="mx-7 my-2">
             <TouchableOpacity
               onPress={() => {
-                router.push(`/(post)/(edit)/${post.postId}`);
+                router.push({
+                  pathname: '/(post)/[id]',
+                  params: {
+                    id: post.postId,
+                    canEdit: 1,
+                  },
+                });
               }}
             >
               <PostCardView

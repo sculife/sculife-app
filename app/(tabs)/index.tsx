@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import {
   Platform,
   RefreshControl,
-  SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { View, Text, ScrollView, useThemeColor } from '@/components/Themed';
 import PostCardView from '@/components/PostCardView';
@@ -17,13 +17,13 @@ import handleText from '@/utils/handleText';
 import { ApiObject, Post, PostApiResponseBody } from '@/typings/api';
 import url from '@/constants/Url';
 import handlePostObject from '@/utils/handlePostObject';
-import useUserStore from '@/store/useUserStore';
 import { wait } from '@/utils/wait';
+import { useSession } from '@/hooks/ctx';
 
 export default function TabOneScreen() {
+  const { session } = useSession();
   const router = useRouter();
   const iconColor = useThemeColor({}, 'tint');
-  const token = useUserStore((state) => state.token);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -32,7 +32,7 @@ export default function TabOneScreen() {
     try {
       const res = await axios.get(url.BASE_URL + '/api/posts/', {
         headers: {
-          Authorization: 'Bearer ' + token,
+          Authorization: 'Bearer ' + session,
         },
         params: {
           limit: 20,
@@ -42,7 +42,7 @@ export default function TabOneScreen() {
       // console.log('(tabs)/index: ', posts);
 
       // todo: handle data
-      let promises = posts.map((p) => handlePostObject(p, token));
+      let promises = posts.map((p) => handlePostObject(p, session));
       let postsObject = await Promise.allSettled(promises);
       setPosts(
         postsObject.filter((p) => p.status === 'fulfilled').map((p) => p.value)
@@ -63,7 +63,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [session]);
 
   const PinnedPost = () => {
     let post = posts.find((p) => p.pinned);

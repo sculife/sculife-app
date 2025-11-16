@@ -28,7 +28,7 @@ export default function ResultEditorScreen() {
     let obj: (keyof typeof subjects)[] = [],
       result = r; // garbage, absolutely rubbish code, wtf is this??!
 
-    console.log('resultEditor', result);
+    console.log('result-editor', result);
 
     for (let k in result) {
       if (Number(result[k]) >= 0 && Number(result[k]) <= 100) {
@@ -82,7 +82,7 @@ export default function ResultEditorScreen() {
           {({ pressed }) => (
             <Octicons
               style={{
-                marginRight: 5,
+                marginRight: 10,
                 opacity: pressed ? 0.5 : 1,
                 color: Colors.ios.linkBlue,
                 padding: 5,

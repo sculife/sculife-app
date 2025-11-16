@@ -1,34 +1,26 @@
+import { User } from '@/typings/interfaces';
 import { create } from 'zustand';
 
 interface UserStore {
-  token: string;
   uid: string;
-  permissions: number;
-  setToken: (token: string) => void;
   setUid: (uid: string) => void;
-  setPermissions: (permissions: number) => void;
+  user: Partial<User>;
+  setUser: (user: Partial<User>) => void;
 }
 
 const useUserStore = create<UserStore>((set) => ({
-  token: '',
   uid: '',
-  permissions: 0,
-  setToken: (token) => {
-    set((preData) => ({
-      ...preData,
-      token,
-    }));
-  },
   setUid: (uid) => {
     set((preData) => ({
       ...preData,
       uid,
     }));
   },
-  setPermissions: (permissions) => {
+  user: {},
+  setUser: (user) => {
     set((preData) => ({
       ...preData,
-      permissions,
+      ...user,
     }));
   },
 }));

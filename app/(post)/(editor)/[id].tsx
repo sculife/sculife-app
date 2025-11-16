@@ -3,7 +3,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
 } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -29,6 +28,8 @@ import handlePostObject from '@/utils/handlePostObject';
 import useUserStore from '@/store/useUserStore';
 import { useColorScheme } from '@/components/useColorScheme';
 import { EditCode } from '@/constants/Code';
+import { useSession } from '@/hooks/ctx';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FontFamilyStylesheet = `
 @font-face {
@@ -42,8 +43,9 @@ export default function TextEditorScreen() {
     id: string;
     editCode: keyof typeof EditCode;
   }>();
-  const theme = useColorScheme() ?? 'light';
   const navigation = useNavigation();
+  const { session: token } = useSession();
+  const theme = useColorScheme() ?? 'light';
   const richTextRef = useRef<RichEditor>(null);
   const backgroundColor = useThemeColor(
     {
@@ -61,7 +63,6 @@ export default function TextEditorScreen() {
     'tabIconDefault'
   );
   const selectedIconColor = '#2095F2';
-  const token = useUserStore((state) => state.token);
   const defaultPost = {
     postId: '',
     authorUid: '',
@@ -222,16 +223,13 @@ export default function TextEditorScreen() {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View className="m-5 mb-0">
+          <View className="m-5 mb-1">
             <Text className="font-semibold text-base">Title:</Text>
           </View>
-          <Text className="mx-5 font-bold text-red-600">
-            You cannot use the tool bar to control this section
-          </Text>
           <View
-            style={{ height: Dimensions.get('window').height * 0.07 }}
-            className="mx-5 rounded-xl"
-            darkColor="#404040"
+            style={{ height: Dimensions.get('window').height * 0.06 }}
+            className="mx-7 rounded-xl"
+            darkColor="#404040" // todo: change color, this is ugly
             lightColor="#f5f5f5"
           >
             <TextInput
@@ -244,7 +242,7 @@ export default function TextEditorScreen() {
           <View className="m-5 mb-3">
             <Text className="font-semibold text-base">Content:</Text>
           </View>
-          <View className="m-5 mt-0 rounded-xl" style={{ backgroundColor }}>
+          <View className="m-7 mt-0 rounded-xl" style={{ backgroundColor }}>
             {/* https://github.com/wxik/react-native-rich-editor/issues/179#issuecomment-854672217 */}
             <RichEditor
               ref={richTextRef}

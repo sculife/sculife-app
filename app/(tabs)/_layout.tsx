@@ -13,8 +13,8 @@ import TabOneScreen from '.';
 import ResultScreen from './result';
 import PostsScreen from './posts';
 import UserInfoScreen from './userInfo';
-import useUserStore from '@/store/useUserStore';
-import { hasPermissions } from '@/utils/usersPermissions';
+import { useSession } from '@/hooks/ctx';
+import { JWTdecodePermissions } from '@/utils/JWTdecodePermissions';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -27,18 +27,18 @@ function TabBarIcon(props: {
 const Tabs = createBottomTabNavigator();
 
 export default function TabLayout() {
+  const { session } = useSession();
   const colorScheme = useColorScheme();
-  const { permissions } = useUserStore((state) => state);
   const [canManagePosts, setCanManagePosts] = useState(false);
 
   useEffect(() => {
+    const permissions = session ? JWTdecodePermissions(session) : [];
     setCanManagePosts(
-      hasPermissions(permissions, 'ADMIN') ||
-        hasPermissions(permissions, 'CREATE_POSTS') ||
-        hasPermissions(permissions, 'DELETE_POSTS')
+      permissions.includes('system:admin') ||
+        permissions.includes('posts:create') ||
+        permissions.includes('posts:delete')
     );
-    console.log(permissions);
-  }, [permissions]);
+  }, [session]);
 
   return (
     <Tabs.Navigator
@@ -83,7 +83,7 @@ export default function TabLayout() {
           title: '成绩',
           headerTitleAlign: 'center',
           headerRight: () => (
-            <Link href="/resultEditor" asChild>
+            <Link href="/(hidden)/result-editor" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <Octicons

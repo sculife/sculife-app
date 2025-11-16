@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/images/adp-app-ico.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.jinghao1209.sculifeapp"
+      "package": "com.sculife.sculifeapp"
     },
     "web": {
       "bundler": "metro",
@@ -32,7 +32,9 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
